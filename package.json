@@ -1,0 +1,62 @@
+{
+  "name": "salon-booking-system",
+  "version": "1.0.0",
+  "description": "Sistema completo de agendamento para salões de beleza com interface moderna e backend Supabase",
+  "main": "src/index.html",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext js,ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "format": "prettier --write \"src/**/*.{js,ts,jsx,tsx,css,md}\"",
+    "start": "vite",
+    "serve": "vite preview"
+  },
+  "keywords": [
+    "salon",
+    "booking",
+    "appointment",
+    "beauty",
+    "pwa",
+    "supabase",
+    "javascript",
+    "vite"
+  ],
+  "author": {
+    "name": "Leonardo de Vasconcelos",
+    "email": "leonardodevasconcelos3@gmail.com",
+    "url": "https://github.com/LELEOU"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LELEOU/App-de-Agendamento.git"
+  },
+  "homepage": "https://github.com/LELEOU/App-de-Agendamento#readme",
+  "bugs": {
+    "url": "https://github.com/LELEOU/App-de-Agendamento/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11",
+    "@types/node": "^22.10.2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.48.1",
+    "@capacitor/android": "^7.4.2",
+    "@capacitor/core": "^7.4.2",
+    "@capacitor/ios": "^7.4.2"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

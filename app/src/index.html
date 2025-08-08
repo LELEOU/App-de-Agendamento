@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda de Salão</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8a4fff">
+    <link rel="apple-touch-icon" href="images/icons/icon-192x192.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+    
+    <!-- Scripts da aplicação -->
+    <script type="module" src="./js/supabase-config.js"></script>
+    <!-- Sistema de Traduções -->
+    <script src="./js/translations/translation-config.js"></script>
+    <script src="./js/translations/pt-BR.js"></script>
+    <script src="./js/translations/en-US.js"></script>
+    <!-- Sistemas de melhorias -->
+    <script src="./js/themes/theme-manager.js"></script>
+    <script src="./js/notifications/notification-manager.js"></script>
+    <script src="./js/cache/cache-manager.js"></script>
+    <script type="module" src="./js/app-supabase-final.js"></script>
+</head>
+<body class="light-mode bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans">
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+    <!-- Login View -->
+    <div id="login-view">
+        <!-- Login content will be injected here by app.js -->
+    </div>
+
+    <div id="app" class="min-h-screen flex hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-[var(--bg-secondary)] border-r border-[var(--border-color)] flex flex-col fixed h-full z-20">
+            <div class="p-4 border-b border-[var(--border-color)]">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-[var(--accent-primary)] flex items-center justify-center text-white font-bold text-xl mr-3" id="user-avatar">
+                        S
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg text-[var(--text-primary)]" data-translate="appName">Salão</h1>
+                        <p class="text-xs text-[var(--text-secondary)]" id="user-role" data-translate="appSubtitle">Gerenciamento</p>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="flex-1 p-4">
+                <ul>
+                    <li class="mb-2">
+                        <a href="#" data-view="calendarView" class="flex items-center p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--accent-primary)] transition-colors duration-200">
+                            📅
+                            <span class="ml-3" data-translate="calendar">Calendário</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" data-view="clientsView" class="flex items-center p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--accent-primary)] transition-colors duration-200">
+                            👥
+                            <span class="ml-3" data-translate="clients">Clientes</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" data-view="servicesView" class="flex items-center p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--accent-primary)] transition-colors duration-200">
+                            💅
+                            <span class="ml-3" data-translate="services">Serviços</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" data-view="staffView" class="flex items-center p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--accent-primary)] transition-colors duration-200">
+                            👩‍💼
+                            <span class="ml-3" data-translate="staff">Funcionários</span>
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" data-view="reportsView" class="flex items-center p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--accent-primary)] transition-colors duration-200">
+                            📊
+                            <span class="ml-3" data-translate="reports">Relatórios</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="p-4 mt-auto border-t border-[var(--border-color)]">
+                 <a href="#" id="settingsLink" data-view="settingsView" class="flex items-center p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--accent-primary)] transition-colors duration-200">
+                    ⚙️
+                    <span class="ml-3" data-translate="settings">Configurações</span>
+                </a>
+                <a href="#" id="logoutBtn" class="flex items-center p-2 mt-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--accent-primary)] transition-colors duration-200">
+                    🚪
+                    <span class="ml-3" data-translate="logout">Sair</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col ml-64">
+            <!-- Header -->
+            <header class="bg-[var(--bg-secondary)] border-b border-[var(--border-color)] p-4 flex justify-between items-center sticky top-0 z-10">
+                <div>
+                    <h2 class="text-xl font-bold text-[var(--text-primary)]"></h2>
+                    <p class="text-sm text-[var(--text-secondary)]" id="currentDate"></p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <!-- Sino de Notificação -->
+                    <div id="notificationBell" class="relative cursor-pointer group">
+                        <div class="p-2 rounded-lg hover:bg-[var(--accent-light)] transition-colors duration-200" onclick="toggleNotificationPanel()">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[var(--text-secondary)] group-hover:text-[var(--accent-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            <!-- Badge de notificação -->
+                            <div id="notificationBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">
+                                <span id="notificationCount">0</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Panel de notificações -->
+                        <div id="notificationPanel" class="absolute right-0 top-full mt-2 w-80 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg shadow-lg z-50 hidden">
+                            <div class="p-4 border-b border-[var(--border-color)]">
+                                <h3 class="font-semibold text-[var(--text-primary)]">Notificações</h3>
+                            </div>
+                            <div id="notificationList" class="max-h-64 overflow-y-auto">
+                                <div class="p-4 text-center text-[var(--text-secondary)]">
+                                    Nenhuma notificação nova
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="newAppointmentBtn" class="bg-[var(--accent-primary)] text-white py-2 px-4 rounded-lg flex items-center hover:bg-[var(--accent-secondary)] transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        <span data-translate="newAppointment">Novo Agendamento</span>
+                    </button>
+                </div>
+            </header>
+            
+            <main id="mainContent" class="flex-1 overflow-auto p-6">
+                <!-- Calendar View -->
+                <div id="calendarView" class="hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <button id="prevPeriodBtn" class="p-2 rounded-lg hover:bg-[var(--accent-light)] transition-colors duration-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                            <button id="todayBtn" class="mx-2 px-3 py-1 rounded-lg border border-[var(--border-color)] hover:bg-[var(--accent-light)] hover:text-[var(--accent-primary)] transition-colors duration-200" data-translate="today">Hoje</button>
+                            <button id="nextPeriodBtn" class="p-2 rounded-lg hover:bg-[var(--accent-light)] transition-colors duration-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div id="scheduleRequestContainer"></div>
+                            <div class="border border-[var(--border-color)] rounded-lg p-0.5 flex">
+                                <button data-view-type="month" class="calendar-view-toggle px-3 py-1 rounded-md text-sm" data-translate="month">Mês</button>
+                                <button data-view-type="week" class="calendar-view-toggle px-3 py-1 rounded-md text-sm" data-translate="week">Semana</button>
+                                <button data-view-type="day" class="calendar-view-toggle px-3 py-1 rounded-md text-sm" data-translate="day">Dia</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="calendarContainer" class="bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-color)]">
+                        <!-- Calendar content will be injected here -->
+                    </div>
+                </div>
+                
+                <!-- Clients View -->
+                <div id="clientsView" class="hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-[var(--text-primary)]" data-translate="clients">Clientes</h2>
+                            <p class="text-[var(--text-secondary)]" data-translate="manageClients">Gerencie seus clientes</p>
+                        </div>
+                        <button id="newClientBtn" class="bg-[var(--accent-primary)] text-white py-2 px-4 rounded-lg flex items-center hover:bg-[var(--accent-secondary)] transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                            <span data-translate="newClient">Novo Cliente</span>
+                        </button>
+                    </div>
+                    <div class="bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-color)]">
+                        <div class="p-4 border-b border-[var(--border-color)]">
+                            <input type="text" id="clientSearch" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg bg-[var(--bg-primary)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)]" data-translate-placeholder="searchClientPlaceholder">
+                        </div>
+                        <ul id="clientList" class="divide-y divide-[var(--border-color)]">
+                            <!-- Client list items will be injected here -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Services View -->
+                <div id="servicesView" class="hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-[var(--text-primary)]" data-translate="services">Serviços</h2>
+                            <p class="text-[var(--text-secondary)]" data-translate="manageServices">Gerencie seus serviços</p>
+                        </div>
+                        <button id="newServiceBtn" class="bg-[var(--accent-primary)] text-white py-2 px-4 rounded-lg flex items-center hover:bg-[var(--accent-secondary)] transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                            <span data-translate="newService">Novo Serviço</span>
+                        </button>
+                    </div>
+                    <div class="bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-color)]">
+                        <ul id="serviceList" class="divide-y divide-[var(--border-color)]">
+                            <!-- Service list items will be injected here -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Staff View -->
+                <div id="staffView" class="hidden">
+                    <div class="mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-[var(--text-primary)]" data-translate="staff">Funcionários</h2>
+                            <p class="text-[var(--text-secondary)]" data-translate="manageStaff">Funcionários cadastrados no sistema</p>
+                        </div>
+                    </div>
+                    <div class="bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-color)]">
+                        <ul id="staffList" class="divide-y divide-[var(--border-color)]">
+                            <!-- Staff list items will be injected here -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Reports View -->
+                <div id="reportsView" class="hidden">
+                    <h2 class="text-2xl font-bold text-[var(--text-primary)] mb-4" data-translate="reports">Relatórios</h2>
+                    <!-- Reports content will be injected here -->
+                </div>
+
+                <!-- Settings View -->
+                <div id="settingsView" class="hidden">
+                    <!-- Settings content will be dynamically injected here -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Container (MANTENHA ESTA LINHA) -->
+    <div id="modal-container"></div>
+</body>
+</html>

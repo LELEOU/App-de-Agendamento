@@ -1,0 +1,10 @@
+{
+  "appId": "com.agendamento.salao",
+  "appName": "Salão Gerenciamento",
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false
+    }
+  }
+}
